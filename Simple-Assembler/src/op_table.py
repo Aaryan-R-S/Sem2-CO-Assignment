@@ -176,15 +176,25 @@ def sub_A(instruction):
 def mov_imm_B(instruction):
     pass
 def mov_reg_C(instruction):
-    pass
+    s="0001100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    ANS.append(s)
 def load_D(instruction):
-    pass
+    s = "00100"
+    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    ANS.append(s)
 def store_D(instruction):
-    pass
+    s = "00101"
+    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    ANS.append(s)
 def mul_A(instruction):
     pass
 def div_C(instruction):
-    pass
+    s="0011100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    REG[0] = REG[instruction[1][-1]] // REG[instruction[2][-1]]
+    REG[1] = REG[instruction[1][-1]] % REG[instruction[2][-1]]
+    ANS.append(s)
 def rs_B(instruction):
     pass
 def ls_B(instruction):
