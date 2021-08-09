@@ -245,3 +245,4 @@ def je_E(instruction):
         ANS.append(s)
 def hlt_F(instruction):
     s = "1001100000000000"
+    ANS.append(s)
