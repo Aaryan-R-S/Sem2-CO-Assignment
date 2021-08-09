@@ -206,16 +206,42 @@ def or_A(instruction):
 def and_A(instruction):
     pass
 def not_C(instruction):
-    pass
+    s = "0110100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    a = str(bin(~REG[instruction[1][-1]]))
+    a = a[3:]
+    REG[instruction[2][-1]] = int(a,2)
+    ANS.append(s)
 def cmp_C(instruction):
-    pass
+    s = "0111000000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    a = REG[instruction[1][-1]]
+    b = REG[instruction[2][-1]]
+    if(a>b):
+        REG[7][1] = 1
+    elif(a==b):
+        REG[7][3] = 1
+    else:
+        REG[7][2] = 1
+    ANS.append(s)
 def jmp_E(instruction):
-    pass
+    s = "0111100000"
+    s = s + LABEL_S(instruction[1])
+    ANS.append(s)
 def jlt_E(instruction):
-    pass
+    if(REG[7][1]==1):
+        s = "1000000000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def jgt_E(instruction):
-    pass
+    if(REG[7][2]==1):
+        s = "1000100000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def je_E(instruction):
-    pass
+    if(REG[7][3]==1):
+        s = "10010000000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def hlt_F(instruction):
-    pass
+    s = "1001100000000000"
