@@ -204,42 +204,158 @@ def instruction_F(instruction):
     if(TEMP[0]=="10011"): hlt_F(instruction)
 
 def add_A(instruction):
-    pass
+    s="0000000"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    res =  REG[int(instruction[2][1:])] + REG[int(instruction[3][1:])]
+    if(res>=(1<<16)):
+        REG[int(instruction[1][1:])]= res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[int(instruction[1][1:])]= res
+        REG[-1][0] = 0
+    ANS.append(s)
+    
 def sub_A(instruction):
-    pass
+    s="0000001"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    res =  REG[int(instruction[2][1:])] - REG[int(instruction[3][1:])]
+    if(res<0):
+        REG[int(instruction[1][1:])]= 0
+        REG[-1][0] = 1
+    else:
+        REG[int(instruction[1][1:])]= res
+        REG[-1][0] = 0
+    ANS.append(s)
+
+def dec_to_binary(n):
+    binary = ""
+    ct=1
+    while(n>0 and ct<=8):
+        binary=str(n & 1)+binary
+        n=n>>1
+        ct+=1
+    
+    s='0'*max(0,8-len(binary))+binary
+    return s
+    
 def mov_imm_B(instruction):
-    pass
+    s="00010"+REG_Names[instruction[1]]     # opcode + register + (imm in binary)
+    s+=dec_to_binary(int(instruction[2][1:]))
+    REG[int(instruction[1][1:])]=int(instruction[2][1:])
+    ANS.append(s)
+    
 def mov_reg_C(instruction):
-    pass
+    s="0001100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    ANS.append(s)
 def load_D(instruction):
-    pass
+    s = "00100"
+    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    ANS.append(s)
 def store_D(instruction):
-    pass
+    s = "00101"
+    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    ANS.append(s)
 def mul_A(instruction):
-    pass
+    s="0011000"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    res =  REG[int(instruction[2][1:])] * REG[int(instruction[3][1:])]
+    if(res>=(1<<16)):
+        REG[int(instruction[1][1:])]= res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[int(instruction[1][1:])]= res
+        REG[-1][0] = 0
+    ANS.append(s)
+    
 def div_C(instruction):
-    pass
+    s="0011100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    REG[0] = REG[instruction[1][-1]] // REG[instruction[2][-1]]
+    REG[1] = REG[instruction[1][-1]] % REG[instruction[2][-1]]
+    ANS.append(s)
+    
 def rs_B(instruction):
-    pass
+    s="01000"+REG_Names[instruction[1]]
+    s+=dec_to_binary(int(instruction[2][1:]))
+    
+    ## Check
+    
+    res=REG[int(instruction[1][1:])]<<min(16,int(instruction[2][1:]))
+    if(res>=(1<<16)):
+        REG[int(instruction[1][1:])]= res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[int(instruction[1][1:])]= res
+        REG[-1][0] = 0
+    ANS.append(s)
+    
+    ##
+    
 def ls_B(instruction):
-    pass
+    s="01001"+REG_Names[instruction[1]]
+    s+=dec_to_binary(int(instruction[2][1:]))
+    REG[int(instruction[1][1:])]=REG[int(instruction[1][1:])]>>int(instruction[2][1:])
+    ANS.append(s)
+        
 def xor_A(instruction):
-    pass
+    s="0101000"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    REG[int(instruction[1][1:])] =  REG[int(instruction[2][1:])] ^ REG[int(instruction[3][1:])]
+    ANS.append(s)
+    # overflow not possible confirm
+    
 def or_A(instruction):
-    pass
+    s="0101100"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    REG[int(instruction[1][1:])] =  REG[int(instruction[2][1:])] | REG[int(instruction[3][1:])]
+    ANS.append(s)
+    
 def and_A(instruction):
-    pass
+    s="0110000"
+    s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    REG[int(instruction[1][1:])] =  REG[int(instruction[2][1:])] & REG[int(instruction[3][1:])]
+    ANS.append(s)
+    
 def not_C(instruction):
-    pass
+    s = "0110100000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    a = str(bin(~REG[instruction[1][-1]]))
+    a = a[3:]
+    REG[instruction[2][-1]] = int(a,2)
+    ANS.append(s)
 def cmp_C(instruction):
-    pass
+    s = "0111000000"
+    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    a = REG[instruction[1][-1]]
+    b = REG[instruction[2][-1]]
+    if(a>b):
+        REG[7][1] = 1
+    elif(a==b):
+        REG[7][3] = 1
+    else:
+        REG[7][2] = 1
+    ANS.append(s)
 def jmp_E(instruction):
-    pass
+    s = "0111100000"
+    s = s + LABEL_S(instruction[1])
+    ANS.append(s)
 def jlt_E(instruction):
-    pass
+    if(REG[7][1]==1):
+        s = "1000000000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def jgt_E(instruction):
-    pass
+    if(REG[7][2]==1):
+        s = "1000100000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def je_E(instruction):
-    pass
+    if(REG[7][3]==1):
+        s = "10010000000"
+        s = s + LABEL_S(instruction[1])
+        ANS.append(s)
 def hlt_F(instruction):
-    pass
+    s = "1001100000000000"
+    ANS.append(s)
+
