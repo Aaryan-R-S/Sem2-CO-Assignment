@@ -212,15 +212,15 @@ def mov_imm_B(instruction):
     
 def mov_reg_C(instruction):
     s="0001100000"
-    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
     ANS.append(s)
 def load_D(instruction):
     s = "00100"
-    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    s = s + REG_Names[instruction[1]] + VAR_S[instruction[2]][0]
     ANS.append(s)
 def store_D(instruction):
     s = "00101"
-    s = s + REG_Names(instruction[1]) + VAR_S(instruction[2])[0]
+    s = s + REG_Names[instruction[1]] + VAR_S[instruction[2]][0]
     ANS.append(s)
 def mul_A(instruction):
     s="0011000"
@@ -236,7 +236,7 @@ def mul_A(instruction):
     
 def div_C(instruction):
     s="0011100000"
-    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
     REG[0] = REG[instruction[1][-1]] // REG[instruction[2][-1]]
     REG[1] = REG[instruction[1][-1]] % REG[instruction[2][-1]]
     ANS.append(s)
@@ -285,14 +285,14 @@ def and_A(instruction):
     
 def not_C(instruction):
     s = "0110100000"
-    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
     a = str(bin(~REG[instruction[1][-1]]))
     a = a[3:]
     REG[instruction[2][-1]] = int(a,2)
     ANS.append(s)
 def cmp_C(instruction):
     s = "0111000000"
-    s = s + REG_Names(instruction[1]) + REG_Names(instruction[2])
+    s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
     a = REG[instruction[1][-1]]
     b = REG[instruction[2][-1]]
     if(a>b):
@@ -304,22 +304,22 @@ def cmp_C(instruction):
     ANS.append(s)
 def jmp_E(instruction):
     s = "0111100000"
-    s = s + LABEL_S(instruction[1])
+    s = s + LABEL_S[instruction[1]]
     ANS.append(s)
 def jlt_E(instruction):
     if(REG[7][1]==1):
         s = "1000000000"
-        s = s + LABEL_S(instruction[1])
+        s = s + LABEL_S[instruction[1]]
         ANS.append(s)
 def jgt_E(instruction):
     if(REG[7][2]==1):
         s = "1000100000"
-        s = s + LABEL_S(instruction[1])
+        s = s + LABEL_S[instruction[1]]
         ANS.append(s)
 def je_E(instruction):
     if(REG[7][3]==1):
         s = "10010000000"
-        s = s + LABEL_S(instruction[1])
+        s = s + LABEL_S[instruction[1]]
         ANS.append(s)
 def hlt_F(instruction):
     s = "1001100000000000"
