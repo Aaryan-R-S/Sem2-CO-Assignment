@@ -1,5 +1,5 @@
-☐ Func to reset TEMP[] after execution of current instruction and FLAGS after execution of next instruction
 ☐ Complete individual opcode funcs handling length of instruction[]
+
 ☐ mov instruction r2=FLAGS (only legal use of flag)
 ☐ mem_addr in ld and st must be var only
 ☐ mem_addr in jmp and related E instructions must be label only
