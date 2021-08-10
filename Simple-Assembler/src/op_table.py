@@ -228,7 +228,7 @@ def sub_A(instruction):
     ANS.append(s)
     
 def mov_imm_B(instruction):
-    s="00010"+REG_Names[instruction[1]]     # opcode + register + (imm in binary)
+    s="00010"+REG_Names[instruction[1]]     
     s+=error_s.dec_to_binary(int(instruction[2][1:]))
     REG[int(instruction[1][1:])]=int(instruction[2][1:])
     ANS.append(s)
@@ -270,6 +270,9 @@ def div_C(instruction):
 def rs_B(instruction):
     s="01000"+REG_Names[instruction[1]]
     s+=error_s.dec_to_binary(int(instruction[2][1:]))
+
+    REG[int(instruction[1][1:])]=REG[int(instruction[1][1:])]>>int(instruction[2][1:])
+    ANS.append(s)
     
     res=REG[int(instruction[1][1:])]<<min(16,int(instruction[2][1:]))
     if(res>=(1<<16)):
@@ -283,7 +286,14 @@ def rs_B(instruction):
 def ls_B(instruction):
     s="01001"+REG_Names[instruction[1]]
     s+=error_s.dec_to_binary(int(instruction[2][1:]))
-    REG[int(instruction[1][1:])]=REG[int(instruction[1][1:])]>>int(instruction[2][1:])
+
+    res=REG[int(instruction[1][1:])]<<min(16,int(instruction[2][1:]))
+    if(res>=(1<<16)):
+        REG[int(instruction[1][1:])]= res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[int(instruction[1][1:])]= res
+        REG[-1][0] = 0
     ANS.append(s)
         
 def xor_A(instruction):
@@ -291,7 +301,6 @@ def xor_A(instruction):
     s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
     REG[int(instruction[1][1:])] =  REG[int(instruction[2][1:])] ^ REG[int(instruction[3][1:])]
     ANS.append(s)
-    # overflow not possible confirm
     
 def or_A(instruction):
     s="0101100"
