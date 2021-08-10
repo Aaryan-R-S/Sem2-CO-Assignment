@@ -15,3 +15,14 @@ def valid_label_name(name, label_dict, reg_dict, opcodes):
     # else in registers then 4
     # else in redefinition then 5
     pass
+
+def dec_to_binary(n):
+    binary = ""
+    ct=1
+    while(n>0 and ct<=8):
+        binary=str(n & 1)+binary
+        n=n>>1
+        ct+=1
+    
+    s='0'*max(0,8-len(binary))+binary
+    return s
