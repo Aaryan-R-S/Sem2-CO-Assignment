@@ -1,4 +1,4 @@
-☐ Complete individual opcode funcs handling length of instruction[]
+☐ Debug individual opcode funcs 
 
 ☐ mov instruction r2=FLAGS (only legal use of flag)
 ☐ mem_addr in ld and st must be var only

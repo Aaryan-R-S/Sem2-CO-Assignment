@@ -1,4 +1,3 @@
-from re import A
 import sys
 import error_s
 import helpers
@@ -18,7 +17,7 @@ ANS = [] # 16-bit instruction
 
 # Stores data for address greater than MEM_LINE (= instr+var ) less than 256 else print error (if in var range then put in var_s instead)
 # MEM_LD_ST = []
-VAR_S = {}  # "var_name": [addr(int in decimal starting from 0), val(int in decimal initially None)]
+VAR_S = {}  # "var_name": [addr(int in decimal starting from 0), val(int in decimal initially 0)]
 LABEL_S = {}     # "label_name": [addr(int in decimal starting from 0)]
 
 # CURR_MEM_LINE = 0
@@ -26,10 +25,10 @@ MEM_LINE = 0  # Mem occupied by instructions + variables
 CURR_LINE = 0
 
 # Error related 
-TEST_NO = None
+TEST_NO = 0
 
 # (all are in string)
-TEMP = [None,None,None,None,None,None]    # [opcode, reg1, reg2, reg3, imm_val, mem_adr] 
+TEMP = [0,0,0,0,0,0]    # [opcode, reg1, reg2, reg3, imm_val, mem_adr] 
 REG_Names = {
     "R0":"000",
     "R1":"001",
@@ -41,7 +40,7 @@ REG_Names = {
     "FLAGS":"111"
 }
 # (all are in int)
-REG = [None,None,None,None,None,None,None,[0,0,0,0]]     # [R0, R1, ..., R6, [V,L,G,E]]
+REG = [0,0,0,0,0,0,0,[0,0,0,0]]     # [R0, R1, ..., R6, [V,L,G,E]]
 OPCODES = {
     "add": ["00000", "A"],
     "sub": ["00001", "A"],
@@ -67,7 +66,7 @@ OPCODES = {
 
 def reset_temp():
     for i in range(len(TEMP)):
-        TEMP[i] = None
+        TEMP[i] = 0
         
 def reset_flags():
     for i in range(0,4):
@@ -115,10 +114,16 @@ def instruction_A(instruction):
     reg1 = instruction[1] 
     reg2 = instruction[2] 
     reg3 = instruction[3] 
+    verdict = helpers.val_reg([reg1, reg2, reg3], "A", REG_Names)
+    if(verdict!=0):
+        if(verdict==10):
+            error_s.flags_invalid(CURR_LINE)
+        else:
+            error_s.invalid_reg(CURR_LINE, instruction[verdict])
+        sys.exit()
     TEMP[1] = reg1
     TEMP[2] = reg2
     TEMP[3] = reg3
-    # validate registers
     if(TEMP[0]=="00000"): add_A(instruction)
     elif(TEMP[0]=="00001"): sub_A(instruction)
     elif(TEMP[0]=="00110"): mul_A(instruction)
@@ -136,9 +141,17 @@ def instruction_B(instruction):
         sys.exit()
     reg1 = instruction[1] 
     imm_val = instruction[2] 
+    verdict = helpers.val_reg([reg1, imm_val], "B", REG_Names)
+    if(verdict!=0):
+        if(verdict==1):
+            error_s.invalid_reg(CURR_LINE, instruction[verdict])
+        elif(verdict==2):
+            error_s.invalid_imm(CURR_LINE, instruction[verdict])
+        elif(verdict==10):
+            error_s.flags_invalid(CURR_LINE)
+        sys.exit()
     TEMP[1] = reg1
     TEMP[4] = imm_val
-    # validate registers
     if(TEMP[0]=="00010"): mov_imm_B(instruction)
     elif(TEMP[0]=="01000"): rs_B(instruction)
     elif(TEMP[0]=="01001"): ls_B(instruction)
@@ -153,9 +166,12 @@ def instruction_C(instruction):
         sys.exit()
     reg1 = instruction[1] 
     reg2 = instruction[2] 
+    verdict = helpers.val_reg([reg1, reg2], "C", REG_Names)
+    if(verdict!=0):
+        error_s.invalid_reg(CURR_LINE, instruction[verdict])
+        sys.exit()
     TEMP[1] = reg1
     TEMP[2] = reg2 
-    # validate registers
     if(TEMP[0]=="00011"): mov_reg_C(instruction)
     elif(TEMP[0]=="00111"): div_C(instruction)
     elif(TEMP[0]=="01101"): not_C(instruction)
@@ -171,9 +187,18 @@ def instruction_D(instruction):
         sys.exit()
     reg1 = instruction[1] 
     mem_addr = instruction[2] 
+    verdict = helpers.val_reg([reg1, mem_addr], "D", REG_Names, VAR_S)
+    if(verdict!=0):
+        if(verdict==1):
+            error_s.invalid_reg(CURR_LINE, instruction[verdict])
+        elif(verdict==2):
+            TEST_NO = 0
+            error_s.invalid_mem_addr(instruction[verdict], TEST_NO)
+        elif(verdict==10):
+            error_s.flags_invalid(CURR_LINE)
+        sys.exit()
     TEMP[1] = reg1
     TEMP[5] = mem_addr
-    # validate registers
     if(TEMP[0]=="00100"): load_D(instruction)
     elif(TEMP[0]=="00101"): store_D(instruction)
 
@@ -186,8 +211,15 @@ def instruction_E(instruction):
         error_s.improper_len_instr(CURR_LINE, TEST_NO, "E")
         sys.exit()
     mem_addr = instruction[1] 
+    verdict = helpers.val_reg([mem_addr], "E", None, LABEL_S)
+    if(verdict!=0):
+        if(verdict==10):
+            error_s.flags_invalid(CURR_LINE)
+        else:
+            TEST_NO = 1
+            error_s.invalid_mem_addr(instruction[verdict], TEST_NO)
+        sys.exit()
     TEMP[5] = mem_addr
-    # validate registers
     if(TEMP[0]=="01111"): jmp_E(instruction)
     elif(TEMP[0]=="10000"): jlt_E(instruction)
     elif(TEMP[0]=="10001"): jgt_E(instruction)
@@ -229,7 +261,7 @@ def sub_A(instruction):
     
 def mov_imm_B(instruction):
     s="00010"+REG_Names[instruction[1]]     
-    s+=error_s.dec_to_binary(int(instruction[2][1:]))
+    s+=helpers.dec_to_binary(int(instruction[2][1:]))
     REG[int(instruction[1][1:])]=int(instruction[2][1:])
     ANS.append(s)
     
@@ -269,7 +301,7 @@ def div_C(instruction):
     
 def rs_B(instruction):
     s="01000"+REG_Names[instruction[1]]
-    s+=error_s.dec_to_binary(int(instruction[2][1:]))
+    s+=helpers.dec_to_binary(int(instruction[2][1:]))
 
     REG[int(instruction[1][1:])]=REG[int(instruction[1][1:])]>>int(instruction[2][1:])
     ANS.append(s)
@@ -285,7 +317,7 @@ def rs_B(instruction):
     
 def ls_B(instruction):
     s="01001"+REG_Names[instruction[1]]
-    s+=error_s.dec_to_binary(int(instruction[2][1:]))
+    s+=helpers.dec_to_binary(int(instruction[2][1:]))
 
     res=REG[int(instruction[1][1:])]<<min(16,int(instruction[2][1:]))
     if(res>=(1<<16)):

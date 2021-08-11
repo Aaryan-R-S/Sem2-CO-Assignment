@@ -33,7 +33,7 @@ while(op_table.CURR_LINE <= len(INP)):
                 op_table.TEST_NO = verdict
                 op_table.error_s.var_error(op_table.CURR_LINE, op_table.TEST_NO, myVar)
                 sys.exit()
-            op_table.VAR_S[myVar] = [None, None]
+            op_table.VAR_S[myVar] = [None, 0]
             op_table.CURR_LINE += 1
     elif(INP[op_table.CURR_LINE-1]==""):
         op_table.CURR_LINE += 1
@@ -47,7 +47,7 @@ while(op_table.CURR_LINE <= len(INP)):
     if(INP[op_table.CURR_LINE-1].split(" ")[0][-1:]==":"):
         # check_valid_label_name() along with not in instruction or reg or redefinition
         myLabel = INP[op_table.CURR_LINE-1].split(" ")[0][:-1]
-        verdict = op_table.helpers.valid_label_name(myLabel, op_table.LABEL_S, op_table.REG_Names, op_table.OPCODES)
+        verdict = op_table.helpers.valid_label_name(myLabel, op_table.VAR_S, op_table.LABEL_S, op_table.REG_Names, op_table.OPCODES)
         if(verdict != 1):
             op_table.TEST_NO = verdict
             op_table.error_s.label_error(op_table.CURR_LINE, op_table.TEST_NO, myLabel)
