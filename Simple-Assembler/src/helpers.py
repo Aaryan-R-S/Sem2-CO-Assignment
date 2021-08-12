@@ -46,6 +46,14 @@ def dec_to_binary(n):
     s='0'*max(0,8-len(binary))+binary
     return s
 
+def addr_to_bin(x):
+    t = bin(x)
+    t = t[2:]
+    t = t[-8:]
+    if(len(t)!=8):
+        t = '0'*(8-len(t))+t
+    return t
+
 def val_reg(list_reg, type_instr, reg_names, var_label_dict=None):
     # type_instr A then 3 reg; return the reg index(1-based indexing) which is invalid else 0 if all valid
     # type_instr B then 1 reg and 1 imm; return the 1 if reg is invalid or 2 if imm is invalid else 0 if all valid

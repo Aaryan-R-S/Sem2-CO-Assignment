@@ -35,7 +35,7 @@ REG_Names = {
     "R2":"010",
     "R3":"011",
     "R4":"100",
-    "R4":"101",
+    "R5":"101",
     "R6":"110",
     "FLAGS":"111"
 }
@@ -193,7 +193,7 @@ def instruction_D(instruction):
             error_s.invalid_reg(CURR_LINE, instruction[verdict])
         elif(verdict==2):
             TEST_NO = 0
-            error_s.invalid_mem_addr(instruction[verdict], TEST_NO)
+            error_s.invalid_mem_addr(CURR_LINE, instruction[verdict], TEST_NO)
         elif(verdict==10):
             error_s.flags_invalid(CURR_LINE)
         sys.exit()
@@ -217,7 +217,7 @@ def instruction_E(instruction):
             error_s.flags_invalid(CURR_LINE)
         else:
             TEST_NO = 1
-            error_s.invalid_mem_addr(instruction[verdict], TEST_NO)
+            error_s.invalid_mem_addr(CURR_LINE, instruction[verdict], TEST_NO)
         sys.exit()
     TEMP[5] = mem_addr
     if(TEMP[0]=="01111"): jmp_E(instruction)
@@ -248,7 +248,7 @@ def add_A(instruction):
     ANS.append(s)
     
 def sub_A(instruction):
-    s="0000001"
+    s="0000100"
     s+=REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
     res =  REG[int(instruction[2][1:])] - REG[int(instruction[3][1:])]
     if(res<0):
@@ -272,12 +272,12 @@ def mov_reg_C(instruction):
     
 def load_D(instruction):
     s = "00100"
-    s = s + REG_Names[instruction[1]] + VAR_S[instruction[2]][0]
+    s = s + REG_Names[instruction[1]] + helpers.addr_to_bin(VAR_S[instruction[2]][0])
     ANS.append(s)
     
 def store_D(instruction):
     s = "00101"
-    s = s + REG_Names[instruction[1]] + VAR_S[instruction[2]][0]
+    s = s + REG_Names[instruction[1]] + helpers.addr_to_bin(VAR_S[instruction[2]][0])
     ANS.append(s)
     
 def mul_A(instruction):
@@ -295,8 +295,8 @@ def mul_A(instruction):
 def div_C(instruction):
     s="0011100000"
     s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
-    REG[0] = REG[instruction[1][-1]] // REG[instruction[2][-1]]
-    REG[1] = REG[instruction[1][-1]] % REG[instruction[2][-1]]
+    REG[0] = REG[int(instruction[1][-1])] // REG[int(instruction[2][-1])]
+    REG[1] = REG[int(instruction[1][-1])] % REG[int(instruction[2][-1])]
     ANS.append(s)
     
 def rs_B(instruction):
@@ -349,16 +349,21 @@ def and_A(instruction):
 def not_C(instruction):
     s = "0110100000"
     s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
-    a = str(bin(~REG[instruction[1][-1]]))
-    a = a[3:]
-    REG[instruction[2][-1]] = int(a,2)
+    c = helpers.addr_to_bin(REG[int(instruction[2][-1])]) 
+    c_c = ""
+    for i in range(len(c)):
+        if(c[i]=='0'):
+            c_c+='1'
+        else:
+            c_c+='0'
+    REG[int(instruction[1][-1])] = int(c_c, 2)
     ANS.append(s)
 
 def cmp_C(instruction):
     s = "0111000000"
     s = s + REG_Names[instruction[1]] + REG_Names[instruction[2]]
-    a = REG[instruction[1][-1]]
-    b = REG[instruction[2][-1]]
+    a = REG[int(instruction[1][-1])]
+    b = REG[int(instruction[2][-1])]
     if(a>b):
         REG[7][1] = 1
     elif(a==b):
@@ -368,26 +373,26 @@ def cmp_C(instruction):
     ANS.append(s)
     
 def jmp_E(instruction):
-    s = "0111100000"
-    s = s + LABEL_S[instruction[1]]
+    s = "01111000"
+    s = s + helpers.addr_to_bin(LABEL_S[instruction[1]][0])
     ANS.append(s)
     
 def jlt_E(instruction):
     if(REG[7][1]==1):
-        s = "1000000000"
-        s = s + LABEL_S[instruction[1]]
+        s = "10000000"
+        s = s + helpers.addr_to_bin(LABEL_S[instruction[1]][0])
         ANS.append(s)
         
 def jgt_E(instruction):
     if(REG[7][2]==1):
-        s = "1000100000"
-        s = s + LABEL_S[instruction[1]]
+        s = "10001000"
+        s = s + helpers.addr_to_bin(LABEL_S[instruction[1]][0])
         ANS.append(s)
         
 def je_E(instruction):
     if(REG[7][3]==1):
-        s = "10010000000"
-        s = s + LABEL_S[instruction[1]]
+        s = "100100000"
+        s = s + helpers.addr_to_bin(LABEL_S[instruction[1]][0])
         ANS.append(s)
         
 def hlt_F(instruction):

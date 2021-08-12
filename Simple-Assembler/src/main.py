@@ -20,15 +20,15 @@ op_table.TEST_NO = None
 
 # VAR STORING
 while(op_table.CURR_LINE <= len(INP)):
-    if(INP[op_table.CURR_LINE-1].split(" ")[0]=="var"):
-        if(len(INP[op_table.CURR_LINE-1].split(" ")) != 2):
+    if(INP[op_table.CURR_LINE-1].split()[0]=="var"):
+        if(len(INP[op_table.CURR_LINE-1].split()) != 2):
             op_table.TEST_NO = 1
             op_table.error_s.var_error(op_table.CURR_LINE, op_table.TEST_NO)
             sys.exit()
         else:
-            myVar = INP[op_table.CURR_LINE-1].split(" ")[1]
+            myVar = INP[op_table.CURR_LINE-1].split()[1]
             # check_valid_var_name() along with not in instr or reg or redefinition
-            verdict = op_table.helpers(myVar, op_table.VAR_S, op_table.REG_Names, op_table.OPCODES)
+            verdict = op_table.helpers.valid_var_name(myVar, op_table.VAR_S, op_table.REG_Names, op_table.OPCODES)
             if(verdict!=1):
                 op_table.TEST_NO = verdict
                 op_table.error_s.var_error(op_table.CURR_LINE, op_table.TEST_NO, myVar)
@@ -44,17 +44,21 @@ op_table.MEM_LINE = 0
     
 # Label Storing with address
 while(op_table.CURR_LINE <= len(INP)):
-    if(INP[op_table.CURR_LINE-1].split(" ")[0][-1:]==":"):
+    if(INP[op_table.CURR_LINE-1].split()[0][-1:]==":"):
         # check_valid_label_name() along with not in instruction or reg or redefinition
-        myLabel = INP[op_table.CURR_LINE-1].split(" ")[0][:-1]
+        myLabel = INP[op_table.CURR_LINE-1].split()[0][:-1]
         verdict = op_table.helpers.valid_label_name(myLabel, op_table.VAR_S, op_table.LABEL_S, op_table.REG_Names, op_table.OPCODES)
         if(verdict != 1):
             op_table.TEST_NO = verdict
             op_table.error_s.label_error(op_table.CURR_LINE, op_table.TEST_NO, myLabel)
             sys.exit()
+        if(len(INP[op_table.CURR_LINE-1].split())==1):
+            op_table.TEST_NO = 7
+            op_table.error_s.label_error(op_table.CURR_LINE, op_table.TEST_NO, myLabel)
+            sys.exit()
         op_table.LABEL_S[myLabel] = [op_table.MEM_LINE]
         op_table.MEM_LINE += 1
-    elif(INP[op_table.CURR_LINE-1].split(" ")[0]=="var"):
+    elif(INP[op_table.CURR_LINE-1].split()[0]=="var"):
         op_table.TEST_NO = 6
         op_table.error_s.var_error(op_table.CURR_LINE, op_table.TEST_NO)
         sys.exit()
@@ -68,17 +72,18 @@ for v in op_table.VAR_S:
     op_table.MEM_LINE += 1
 
 # Check Memory Overflow
-if(op_table.MEM_LINE>=256):
+if(op_table.MEM_LINE>=257):
     op_table.error_s.mem_over_flow()
     sys.exit()
 
 # Check last instruction is hlt or not and how many hlt instructions
+op_table.CURR_LINE = len(INP)
 hlt_count = 0
 while(op_table.CURR_LINE>=1):
     if(INP[op_table.CURR_LINE-1]!=""):
-        if(INP[op_table.CURR_LINE-1].split(" ")[0]=="hlt"):
+        if(INP[op_table.CURR_LINE-1].split()[0]=="hlt" or (INP[op_table.CURR_LINE-1].split()[0][-1]==":" and INP[op_table.CURR_LINE-1].split()[1]=="hlt")):
             hlt_count += 1 
-        if(hlt_count==0 and INP[op_table.CURR_LINE-1].split(" ")[0]!="hlt"):
+        if(hlt_count==0 and INP[op_table.CURR_LINE-1].split()[0]!="hlt" and INP[op_table.CURR_LINE-1].split()[0][:-1]!=":"):
             op_table.TEST_NO = 1
             op_table.error_s.hlt_error(op_table.CURR_LINE, op_table.TEST_NO)
             sys.exit()
@@ -95,7 +100,7 @@ while(op_table.CURR_LINE<=len(INP)):
     if(INP[op_table.CURR_LINE-1]==""):
         op_table.CURR_LINE += 1
         continue
-    myInstr = INP[op_table.CURR_LINE-1].split(" ")
+    myInstr = INP[op_table.CURR_LINE-1].split()
     if(myInstr[0]=="var"):
         op_table.CURR_LINE += 1
         continue
