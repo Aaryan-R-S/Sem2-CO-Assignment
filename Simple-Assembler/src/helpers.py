@@ -80,6 +80,10 @@ def val_reg(list_reg, type_instr, reg_names, var_label_dict=None):
         for i in range(len(list_reg)):
             if(list_reg[i] not in reg_names):
                 return i+1
+        if(list_reg[0] == "FLAGS"):
+            return 10
+        if(list_reg[1] == "FLAGS" and var_label_dict[0]!="00011"):
+            return 10
         return 0
     if(type_instr=="D"):
         if(list_reg[0] not in reg_names):
