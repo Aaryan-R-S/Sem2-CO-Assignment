@@ -5,7 +5,7 @@ def valid_var_name(name, var_dict, reg_dict, opcodes):
     # else in instr then 3 
     # else in registers then 4
     # else in redefinition then 5
-    if(not(name.replace('_', '').isalnum() or name=="_")):
+    if(not(name.replace('_', '').isalnum() or name=="_") or name.isnumeric()):
         return 2
     if(name in opcodes.keys()):
         return 3
@@ -23,7 +23,7 @@ def valid_label_name(name, var_dict, label_dict, reg_dict, opcodes):
     # else in registers then 4
     # else in redefinition then 5
     # else in var then 6
-    if(not(name.replace('_', '').isalnum() or name=="_")):
+    if(not(name.replace('_', '').isalnum() or name=="_") or name.isnumeric()):
         return 2
     if(name in opcodes.keys()):
         return 3
