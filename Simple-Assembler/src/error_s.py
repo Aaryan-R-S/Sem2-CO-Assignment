@@ -8,7 +8,7 @@ def var_error(line, test_no, myVar=None):
     if(test_no==1):
         print("[ERROR] Invalid format for the variable initialization at the line no. "+str(line)+" \nA Variable must be initialized in the format: var x")
     elif(test_no==2):
-        print("[ERROR] "+myVar+" is an invalid variable name at the line no. "+str(line)+" \nA Variable name consists of alphanumeric characters and underscores only.")
+        print("[ERROR] "+myVar+" is an invalid variable name at the line no. "+str(line)+" \nA Variable name must consists of alphanumeric characters and underscores only.")
     elif(test_no==3):
         print("[ERROR] "+myVar+" is an invalid variable name at the line no. "+str(line)+" \nA Variable name must not be an instruction.")
     elif(test_no==4):
