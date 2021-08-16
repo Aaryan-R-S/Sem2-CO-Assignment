@@ -1,0 +1,9 @@
+☐ mov instruction r2=FLAGS (only legal use of flag)
+☐ mem_addr in ld and st must be var only
+☐ mem_addr in jmp and related E instructions must be label only
+
+☐ 255>=imm>=0 
+☐ mem_addr = imm = 8-bit
+☐ instruction = 16-bit
+☐ mem_size = 256
+☐ Reg size = 16-bit
