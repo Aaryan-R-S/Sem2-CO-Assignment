@@ -146,6 +146,7 @@ def mov_reg_C(instr):
         REG[reg1] = 1*REG[7][3] + 2*REG[7][2] + 4*REG[7][1] + 8*REG[7][0]
     else:
         REG[reg1] = REG[reg2]
+    NEWPC = PC+1
 
 def load_D(instr):
     # s = "00100"
@@ -156,7 +157,8 @@ def load_D(instr):
     addr = int(instr[8:],2)
     a = int(MEM[addr],2)
     REG[reg1] = a
-    
+    NEWPC = PC+1
+
 def store_D(instr):
     # s = "00101"
     # s = s + REG_Names[instr[1]] + helpers.addr_to_bin(VAR_S[instr[2]][0])
@@ -165,7 +167,7 @@ def store_D(instr):
     reg1 = REG[int(instr[5:8],2)]
     addr = int(instr[8:],2)
     MEM[addr] = helpers.dec_to_bin(reg1,16)
-
+    NEWPC = PC+1
     
 def mul_A(instr):
     # s = OPCODES["mul"][0] + "00"
@@ -193,7 +195,8 @@ def div_C(instr):
     else:
         REG[0] = int(reg1/reg2)
         REG[1] = int(reg1%reg2)
-    
+    NEWPC = PC+1
+
 def rs_B(instr):
     # s = "01000" + REG_Names[instr[1]]
     # s += helpers.dec_to_binary(int(instr[2][1:]))
@@ -257,6 +260,7 @@ def not_C(instr):
         elif i=="0":
             s = s + "1"
     REG[reg1] = int(s,2)
+    NEWPC = PC+1
 
 
 def cmp_C(instr):
@@ -271,31 +275,50 @@ def cmp_C(instr):
     # else:
     #     REG[7][1] = 1
     # ANS.append(s)
-    pass
+    a = REG[helpers.reg_bin(instr[9:12])]
+    b = REG[helpers.reg_bin(instr[12:])]
+    if(a>b):
+        REG[7][2] = 1
+    elif(a==b):
+        REG[7][3] = 1
+    else:
+        REG[7][1] = 1
+    NEWPC = PC + 1
 
 def jmp_E(instr):
-    # s = "01111000"
-    # s = s + helpers.addr_to_bin(LABEL_S[instr[1]][0])
-    # ANS.append(s)
-    pass
+    addr = int(instr[8:],2)
+    NEWPC = addr
+    
     
 def jlt_E(instr):
     # s = "10000000"
     # s = s + helpers.addr_to_bin(LABEL_S[instr[1]][0])
     # ANS.append(s)
-    pass
+    addr = int(instr[8:],2)
+    if(REG[7][1]==1):
+        NEWPC = addr
+    else:
+        NEWPC = PC + 1
         
 def jgt_E(instr):
     # s = "10001000"
     # s = s + helpers.addr_to_bin(LABEL_S[instr[1]][0])
     # ANS.append(s)
-    pass
+    addr = int(instr[8:],2)
+    if(REG[7][2]==1):
+        NEWPC = addr
+    else:
+        NEWPC = PC + 1
         
 def je_E(instr):
     # s = "10010000"
     # s = s + helpers.addr_to_bin(LABEL_S[instr[1]][0])
     # ANS.append(s)
-    pass
+    addr = int(instr[8:],2)
+    if(REG[7][3]==1):
+        NEWPC = addr
+    else:
+        NEWPC = PC + 1
         
 def hlt_F(instr):
     # s = "1001100000000000"
