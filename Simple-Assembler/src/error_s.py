@@ -26,7 +26,7 @@ def label_error(line, test_no, myLabel=None):
     # 6 = var
     # 7 = followed by instr
     if(test_no==2):
-        print("[ERROR] "+myLabel+" is an invalid label name at the line no. "+str(line)+" \nA Label name consists of alphanumeric characters and underscores only.")
+        print("[ERROR] "+myLabel+" is an invalid label name at the line no. "+str(line)+" \nA Label name must consists of alphanumeric characters and underscores only.")
     elif(test_no==3):
         print("[ERROR] "+myLabel+" is an invalid label name at the line no. "+str(line)+" \nA Label name must not be an instruction.")
     elif(test_no==4):
@@ -36,7 +36,7 @@ def label_error(line, test_no, myLabel=None):
     elif(test_no==6):
         print("[ERROR] "+myLabel+" is an invalid label name at the line no. "+str(line)+" \nA Label name must not be a variable.")
     elif(test_no==7):
-        print("[ERROR] "+myLabel+" is an invalid labeln ame initialization at the line no. "+str(line)+" \nA Label name must be followed by an instruction.")
+        print("[ERROR] "+myLabel+" is an invalid label name initialization at the line no. "+str(line)+" \nA Label name must be followed by an instruction.")
 
 def mem_over_flow():
     print("[ERROR] Memory Overflow. \nTotal number of instructions and variables must not exceed memory length i.e. 256")
@@ -52,7 +52,7 @@ def hlt_error(line, test_no):
 def op_error(line, test_no, op):
     # 1 = not a instr
     if(test_no==1):
-        print("[ERROR] "+op+" is not an instruction at the line no. "+str(line))
+        print("[ERROR] "+op+" is not a valid instruction at the line no. "+str(line))
 
 def improper_len_instr(line, test_no, type_instr):
     # test_no = instr_name 
