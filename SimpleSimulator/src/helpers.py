@@ -14,3 +14,6 @@ def bin_to_dec(s):
         power+=1
     return(ans)
 
+def reg_bin(x):
+    a = int(x,2)
+    return a
