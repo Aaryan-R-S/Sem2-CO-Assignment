@@ -101,16 +101,26 @@ def run_instr(instr):
             hlt_F(instr)
 
 def add_A(instr):
+
     # s = OPCODES["add"][0] + "00"
-    # s += REG_Names[instr[1]] + REG_Names[instr[2]] + REG_Names[instr[3]]
-    # res = REG[int(instr[2][1:])] + REG[int(instr[3][1:])]
+    # s += REG_Names[instruction[1]] + REG_Names[instruction[2]] + REG_Names[instruction[3]]
+    # res = REG[int(instruction[2][1:])] + REG[int(instruction[3][1:])]
     # if(res>=(1<<16)):
-    #     REG[int(instr[1][1:])] = res%(1<<16)
+    #     REG[int(instruction[1][1:])] = res%(1<<16)
     #     REG[-1][0] = 1
     # else:
-    #     REG[int(instr[1][1:])] = res
+    #     REG[int(instruction[1][1:])] = res
     # ANS.append(s)
-    pass
+
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    res=REG[execute.REG_Names[src1_reg][0]]+REG[execute.REG_Names[src2_reg][0]]
+    if(res>=(1<<16)):
+        REG[execute.REG_Names[dest_reg][0]] = res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[execute.REG_Names[dest_reg][0]] = res
     
 def sub_A(instr):
     # s = OPCODES["sub"][0] + "00"
@@ -122,14 +132,26 @@ def sub_A(instr):
     # else:
     #     REG[int(instr[1][1:])] = res
     # ANS.append(s)
-    pass
+
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    res=REG[execute.REG_Names[src1_reg][0]]-REG[execute.REG_Names[src2_reg][0]]
+    if(res<0):
+        REG[execute.REG_Names[dest_reg][0]] = 0
+        REG[-1][0] = 1
+    else:
+        REG[execute.REG_Names[dest_reg][0]] = res
+
     
 def mov_imm_B(instr):
     # s = "00010" + REG_Names[instr[1]]     
     # s += helpers.dec_to_binary(int(instr[2][1:]))
     # REG[int(instr[1][1:])] = int(instr[2][1:])
     # ANS.append(s)
-    pass
+    dest_reg=instr[5:8]
+    imm=instr[8:16]
+    REG[execute.REG_Names[dest_reg][0]] = helpers.bin_to_dec(imm)
     
 def mov_reg_C(instr):
     # s="0001100000"
@@ -165,7 +187,15 @@ def mul_A(instr):
     # else:
     #     REG[int(instr[1][1:])] = res
     # ANS.append(s)
-    pass
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    res=REG[execute.REG_Names[src1_reg][0]]*REG[execute.REG_Names[src2_reg][0]]
+    if(res>=(1<<16)):
+        REG[execute.REG_Names[dest_reg][0]] = res%(1<<16)
+        REG[-1][0] = 1
+    else:
+        REG[execute.REG_Names[dest_reg][0]] = res
     
 def div_C(instr):
     # s="0011100000"
@@ -181,7 +211,10 @@ def rs_B(instr):
 
     # REG[int(instr[1][1:])] = REG[int(instr[1][1:])]>>int(instr[2][1:])
     # ANS.append(s)
-    pass
+
+    dest_reg=instr[5:8]
+    imm=instr[8:16]
+    REG[execute.REG_Names[dest_reg][0]]=REG[execute.REG_Names[dest_reg][0]]>>helpers.bin_to_dec(imm)
     
 def ls_B(instr):
     # s = "01001" + REG_Names[instr[1]]
@@ -193,29 +226,45 @@ def ls_B(instr):
     # else:
     #     REG[int(instr[1][1:])] = res
     # ANS.append(s)
-    pass
+    dest_reg=instr[5:8]
+    imm=instr[8:16]
+    res=REG[execute.REG_Names[dest_reg][0]]<<min(16,helpers.bin_to_dec(imm))
+    if(res>=(1<<16)):
+        REG[execute.REG_Names[dest_reg][0]] = res%(1<<16)
+    else:
+        REG[execute.REG_Names[dest_reg][0]] = res
 
 def xor_A(instr):
     # s = OPCODES["xor"][0] + "00"
     # s += REG_Names[instr[1]] + REG_Names[instr[2]] + REG_Names[instr[3]]
+
     # REG[int(instr[1][1:])] =  REG[int(instr[2][1:])] ^ REG[int(instr[3][1:])]
     # ANS.append(s)
-    pass
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    REG[execute.REG_Names[dest_reg][0]] = REG[execute.REG_Names[src1_reg][0]] ^ REG[execute.REG_Names[src2_reg][0]]
     
 def or_A(instr):
     # s = OPCODES["or"][0] + "00"
     # s += REG_Names[instr[1]] + REG_Names[instr[2]] + REG_Names[instr[3]]
     # REG[int(instr[1][1:])] =  REG[int(instr[2][1:])] | REG[int(instr[3][1:])]
     # ANS.append(s)
-    pass
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    REG[execute.REG_Names[dest_reg][0]] = REG[execute.REG_Names[src1_reg][0]] | REG[execute.REG_Names[src2_reg][0]]
     
 def and_A(instr):
     # s = OPCODES["and"][0] + "00"
     # s += REG_Names[instr[1]] + REG_Names[instr[2]] + REG_Names[instr[3]]
     # REG[int(instr[1][1:])] =  REG[int(instr[2][1:])] & REG[int(instr[3][1:])]
     # ANS.append(s)
-    pass
-    
+    dest_reg=instr[7:10]
+    src1_reg=instr[10:13]
+    src2_reg=instr[13:16]
+    REG[execute.REG_Names[dest_reg][0]] = REG[execute.REG_Names[src1_reg][0]] & REG[execute.REG_Names[src2_reg][0]]
+
 def not_C(instr):
     # s = "0110100000"
     # s = s + REG_Names[instr[1]] + REG_Names[instr[2]]
