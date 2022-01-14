@@ -1,5 +1,5 @@
 # CO M21 Assignment
-Repository for Computer Organization (Monsoon 2021 semester) assignment at IIITD
+Repository for Computer Organization (Winter 2021 semester) assignment at IIITD
 
 ## About Assignment
 * To design and implement a custom assembler and a custom simulator for a given ISA.
