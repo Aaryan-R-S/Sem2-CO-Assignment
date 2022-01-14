@@ -1,13 +1,15 @@
 # CO M21 Assignment
-Starter repository for Computer Organization, Monsoon 2021 semester, assignment at IIITD
+Repository for Computer Organization (Monsoon 2021 semester) assignment at IIITD
 
-## Adding code
-* Add the assembler code in the `Simple-Assembler` directory. Add the commands to execute the assembler in `Simple-Assembler/run`.
-* Add the simulator code in the `SimpleSimulator` directory. Add the commands to execute the assembler in `SimpleSimulator/run`.
-* Make sure that both the assembler and the simulator read from `stdin`.
-* Make sure that both the assembler and the simulator write to `stdout`.
+## About Assignment
+* To design and implement a custom assembler and a custom simulator for a given ISA.
+* Read the `Assignment.pdf` for more details.
 
-## How to evaluate
+## How to Run
+* To start the Simulator, run `SimpleSimulator > src > main.py` 
+* To start the Assembler, run `Simple-Assembler > src > main.py` 
+  
+## How to Evaluate
 * Go to the `automatedTesting` directory and execute the `run` file with appropiate options passed as arguments.
 * Options available for automated testing:
 	1. `--verbose`: Prints verbose output
